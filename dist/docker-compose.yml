@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  epp:
+    image: epp:latest
+    restart: always
+    environment:
+      WEBHOOK_URL: http://elog.tld/api/webhook/elog
+      WEBHOOK_TOKEN: 123456789
+      PINGDOM_TOKEN: XXXXXXXXX
+      PINGDOM_INT: 5m
+      PP_DEBUG: 0
+      PP_PREPEND: "TEST ALERT: "
+
