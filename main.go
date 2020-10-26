@@ -99,7 +99,6 @@ func main() {
 						// Alert is still active - No action
 					} else {
 						// Alert in not active - Clear Alert
-						//check.Status = "up"
 						det, err := client.UptimeGetCheckDetails(id)
 						if err != nil {
 							log.Println(err)
@@ -136,6 +135,14 @@ func main() {
 							log.Println(err)
 						}
 						log.Printf("Trigger: %d: %s - %s \n", check.ID, check.Name, check.CustomMessage)
+					}
+				}
+
+				// Loop checks and set Lasterror time to be able to match fingerprints in eLog
+				for id, check := range pingdomChecks {
+					_, ok := history[id]
+					if ok {
+						check.Lasterrortime = history[id].Lasterrortime
 					}
 				}
 

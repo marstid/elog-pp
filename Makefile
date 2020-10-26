@@ -11,11 +11,12 @@
     NOW=`date +'%Y-%m-%d_%T'`
     DATE=`date +'%Y-%m-%d'`
     VERSIONGIT=`git rev-parse HEAD`
-    VERSION=1.0
+    VERSION=`git describe --tags`
+    #REGISTRY need to be set in ENV to push lo local docker registry
 
     all: test build
 
-    docker: fmt
+    docker-build: fmt
 		docker build --build-arg version=$(VERSIONGIT) --build-arg buildtime=$(NOW) . -t $(BINARY_NAME)
 
     docker-dist:
@@ -26,6 +27,14 @@
 
     build: fmt
 		$(GOBUILD) -o $(BINARY_NAME) -trimpath -ldflags "-X main.sha1ver=$(VERSIONGIT) -X main.buildTime=$(NOW)" -v
+
+    docker-push:
+		docker tag $(BINARY_NAME) $(REGISTRY)/$(BINARY_NAME)
+		docker tag $(BINARY_NAME) $(REGISTRY)/$(BINARY_NAME):$(VERSION)
+		docker push $(REGISTRY)/$(BINARY_NAME)
+		docker push $(REGISTRY)/$(BINARY_NAME):$(VERSION)
+
+    docker: docker-build docker-push
 
     test:
 		$(GOTEST) -v ./...
